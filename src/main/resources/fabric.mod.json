@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "id": "bridge_toneko_fuji",
+  "version": "${version}",
+  "name": "Bridge: toNeko x Fuji",
+  "description": "Makes Fuji's chat.style module the renderer for toNeko's chat decorations. Exposes toNeko/JustARod chat data as %toneko:*% / %justarod:*% placeholders usable inside Fuji's chat format, and suppresses toNeko's own chat broadcast so the two mods no longer fight over the chat line.",
+  "authors": ["deepseek"],
+  "license": "GPL-3.0",
+  "environment": "*",
+  "entrypoints": {
+    "preLaunch": ["ar.hxi.tfbridge.BridgePreLaunch"],
+    "main": ["ar.hxi.tfbridge.BridgeTonekoFuji"]
+  },
+  "mixins": [
+    "bridge_toneko_fuji.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.15.0",
+    "minecraft": "1.21.1",
+    "java": ">=21",
+    "fabric-api": "*",
+    "fuji": ">=14.0.0",
+    "toneko": ">=1.9.0"
+  },
+  "suggests": {
+    "justarod": "*"
+  }
+}

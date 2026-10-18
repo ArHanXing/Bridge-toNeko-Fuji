@@ -1,0 +1,52 @@
+plugins {
+    id 'net.fabricmc.fabric-loom-remap' version "${loom_version}"
+    id 'maven-publish'
+}
+
+/* group / version 由 gradle.properties 的 group / version 自动注入。 */
+
+base {
+    archivesName = project.archives_base_name
+}
+
+repositories {
+    // Text Placeholder API 等 pb4 系模组
+    maven { name = 'Nucleoid'; url = 'https://maven.nucleoid.xyz' }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    // 官方 Mojang 映射（mojmap）：Fabric 1.x 时代全用 mojmap，不用 yarn。
+    // 注意：mojmap 工程里类名是 BuiltInRegistries/Item.Properties/CommandSourceStack 等，
+    // 与社区教程常见的 Yarn 名（Registries/Item.Settings/ServerCommandSource）不同，勿混用。
+    mappings loom.officialMojangMappings()
+    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+
+    /*
+     * 编译期目标：这两个 jar 只用于「让编译器看到我们要 mixin / 调用的第三方类」。
+     * loom 会把它们从 intermediary 命名空间重映射到本工程的 mojmap 命名空间，
+     * 所以源码里可以直接写 ServerPlayer / Component / PlayerChatMessage 等官方名。
+     */
+    modCompileOnly files("libs/fuji-${project.fuji_version}.jar")
+    modCompileOnly files("libs/toneko-${project.toneko_version}.jar")
+    modCompileOnly "eu.pb4:placeholder-api:${project.placeholder_api_version}"
+}
+
+processResources {
+    // 把 Gradle version 展开进 fabric.mod.json 的 ${version}。
+    filesMatching('fabric.mod.json') {
+        expand "version": version
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.release = 21
+    options.encoding = 'UTF-8'
+}
+
+java {
+    withSourcesJar()
+    sourceCompatibility = JavaVersion.toVersion(21)
+    targetCompatibility = JavaVersion.toVersion(21)
+}
